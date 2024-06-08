@@ -13,23 +13,33 @@ def open_json(path_to_file):
         return list_operations
 
 
-def last_operations(list_operations):
+def clean_canselled(list_operations):
+    '''Функция убирает операции в которых отсустствует ключ "date" и со статусом "CANCELLED"'''
+    clean_list = []
+    for i in list_operations:
+        if i and i.get('date') is not None and i.get('state') == 'EXECUTED':
+            clean_list.append(i)
+    return clean_list
+
+
+def last_operations(clean_operations):
     """
-    Функция оставляет последние 5 операций
+    Функция оставляет последние 5 совершенных операций
     """
-    sorted_operations = sorted(list_operations, key=lambda x: x.get('date', '0'))
+    sorted_operations = sorted(clean_operations, key=lambda x: x.get('date', '0'), reverse=True)
     last_five_operations = sorted_operations[:6]
     return last_five_operations
 
 
 def select_date(five_operations):
     """
-    Функция переводит дату в нужный формат
+    Функция переводит дату в нужный формат, удаляет пустые словари
     """
     del five_operations[0]
     for operations in five_operations:
         operations['date'] = datetime.fromisoformat(operations['date']).strftime('%d.%m.%Y')
     return five_operations
+
 
 
 def masc_and_split(card):
